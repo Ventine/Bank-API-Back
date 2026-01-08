@@ -13,7 +13,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.apibank</groupId>
+    <groupId>com.example.bank</groupId>
     <artifactId>api-bank</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
@@ -53,6 +53,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- OpenAPI 3 / Swagger UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
         </dependency>
 
     </dependencies>
