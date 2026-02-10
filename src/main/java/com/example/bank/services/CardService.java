@@ -9,48 +9,38 @@ import org.springframework.stereotype.Service;
 
 import com.example.bank.dto.CreateCardRequest;
 import com.example.bank.entity.Card;
+import java.time.YearMonth;
+import java.time.LocalDate;
 
-/**
- * Servicio de dominio encargado de la gestión de tarjetas.
- *
- * <p>Responsabilidades:
- * <ul>
- *   <li>Creación de tarjetas</li>
- *   <li>Generación de números de tarjeta</li>
- *   <li>Gestión del estado de la tarjeta</li>
- * </ul>
- *
- * <p>Este servicio mantiene un almacenamiento en memoria
- * únicamente con fines demostrativos. No representa persistencia real.
- */
 @Service
 public class CardService {
 
-    /**
-     * Almacenamiento en memoria de tarjetas indexadas por número de tarjeta.
-     * Thread-safe para soportar acceso concurrente.
-     */
     private final Map<String, Card> cardStore = new ConcurrentHashMap<>();
-
-    /**
-     * Generador pseudoaleatorio utilizado para la creación de números de tarjeta.
-     */
     private final Random random = new Random();
 
-    /**
-     * Crea una nueva tarjeta a partir de la solicitud proporcionada.
-     *
-     * @param request objeto que contiene los datos necesarios para la creación
-     *                de la tarjeta (titular y fecha de expiración)
-     * @return tarjeta creada y almacenada en memoria
-     */
     public Card createCard(CreateCardRequest request) {
-        String cardNumber = generateCardNumber();
+
         YearMonth expiration = YearMonth.of(
                 request.getExpirationYear(),
                 request.getExpirationMonth()
         );
 
+        YearMonth minAllowed = YearMonth.now().plusYears(3);
+
+        if (expiration.isBefore(minAllowed)) {
+            throw new IllegalArgumentException(
+                "Expiration date must be at least 3 years from now"
+            );
+        }
+        String holderName = request.getHolderName();
+
+        if (holderName == null || holderName.trim().length() < 15) {
+            throw new IllegalArgumentException(
+                "Holder name must be at least 15 characters long"
+            );
+        }
+
+        String cardNumber = generateCardNumber();
         Card card = new Card(cardNumber, request.getHolderName(), expiration);
         cardStore.put(cardNumber, card);
         return card;

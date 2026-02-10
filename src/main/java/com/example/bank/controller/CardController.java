@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 
 /**
  * CardController
@@ -83,7 +84,7 @@ public class CardController {
                     schema = @Schema(implementation = CreateCardRequest.class)
                 )
             )
-            @RequestBody CreateCardRequest request) {
+            @Valid @RequestBody CreateCardRequest request) {
 
         Card card = cardService.createCard(request);
         return new CardResponse(card);

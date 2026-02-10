@@ -63,7 +63,7 @@ public class Card {
         this.holderName = holderName;
         this.expirationDate = expirationDate;
         this.balance = 0.0;
-        this.status = CardStatus.ACTIVE;
+        this.status = CardStatus.BLOCKED;
     }
 
     /**
