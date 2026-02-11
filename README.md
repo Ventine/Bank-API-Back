@@ -29,7 +29,7 @@ GET /healthAPI
 </pre>
 
 <p>
-URL en producción:
+URL de Swagger: https://bank-api-back-7m97.onrender.com/swagger-ui/index.html
 </p>
 
 <pre>
