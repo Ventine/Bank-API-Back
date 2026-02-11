@@ -28,9 +28,9 @@ Endpoint utilizado para verificar el estado de la API.
 GET /healthAPI
 </pre>
 
-<p>
+<pre>
 URL de Swagger: https://bank-api-back-7m97.onrender.com/swagger-ui/index.html
-</p>
+</pre>
 
 <pre>
 https://bank-api-back-7m97.onrender.com/healthAPI
