@@ -2,6 +2,7 @@ package com.example.bank.controller;
 
 import com.example.bank.dto.CardResponse;
 import com.example.bank.dto.CreateCardRequest;
+import com.example.bank.dto.RechargeRequest;
 import com.example.bank.entity.Card;
 import com.example.bank.services.CardService;
 
@@ -131,4 +132,61 @@ public class CardController {
         Card card = cardService.toggleCardStatus(cardNumber);
         return new CardResponse(card);
     }
+    
+    /**
+     * Realiza una recarga de saldo a una tarjeta bancaria existente.
+     *
+     * <p>
+     * Esta operación incrementa el balance disponible de la tarjeta
+     * siempre que la misma se encuentre en estado {@code ACTIVE}.
+     * </p>
+     *
+     * <p>
+     * Validaciones aplicadas:
+     * <ul>
+     *     <li>La tarjeta debe existir.</li>
+     *     <li>La tarjeta debe estar activa.</li>
+     *     <li>El monto debe ser mayor que cero.</li>
+     * </ul>
+     * </p>
+     *
+     * @param cardNumber número único de la tarjeta a recargar
+     * @param request    objeto que contiene el monto a recargar
+     * @return representación actualizada de la tarjeta con el nuevo balance
+     * @throws IllegalArgumentException si la tarjeta no existe o el monto es inválido
+     * @throws IllegalStateException    si la tarjeta no se encuentra activa
+     */
+    @Operation(
+        summary = "Recargar saldo",
+        description = "Recarga saldo a una tarjeta activa"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Recarga realizada correctamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = CardResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Solicitud inválida",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Tarjeta no encontrada",
+            content = @Content
+        )
+    })
+    @PutMapping("/{cardNumber}/recharge")
+    public CardResponse recharge(
+            @PathVariable String cardNumber,
+            @RequestBody RechargeRequest request) {
+
+        Card card = cardService.recharge(cardNumber, request.getAmount());
+        return new CardResponse(card);
+    }
+
 }

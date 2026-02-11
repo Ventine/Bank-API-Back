@@ -120,4 +120,36 @@ public class Card {
                 ? CardStatus.BLOCKED
                 : CardStatus.ACTIVE;
     }
+    
+    /**
+     * Incrementa el balance de la tarjeta mediante una operación de recarga.
+     *
+     * <p>
+     * Esta operación solo puede ejecutarse si la tarjeta se encuentra
+     * en estado {@link CardStatus#ACTIVE}. Además, el monto proporcionado
+     * debe ser mayor que cero.
+     * </p>
+     *
+     * <p>
+     * En caso de incumplir las reglas de negocio, se lanzará una excepción
+     * y no se modificará el estado interno de la entidad.
+     * </p>
+     *
+     * @param amount monto a adicionar al balance actual de la tarjeta
+     * @throws IllegalStateException si la tarjeta no se encuentra activa
+     * @throws IllegalArgumentException si el monto es menor o igual a cero
+     */
+    public void recharge(double amount) {
+
+        if (this.status != CardStatus.ACTIVE) {
+            throw new IllegalStateException("Card must be ACTIVE to recharge");
+        }
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
+        }
+
+        this.balance += amount;
+    }
+
 }

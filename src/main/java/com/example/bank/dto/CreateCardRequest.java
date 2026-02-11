@@ -38,6 +38,12 @@ public class CreateCardRequest {
     )
     private int expirationMonth;
 
+    @Schema(
+            description = "Tipo de moneda de la tarjeta",
+            example = "USD",
+            required = true
+    )
+    private String kindMoney;
     /**
      * @return nombre del titular de la tarjeta
      */
@@ -57,5 +63,12 @@ public class CreateCardRequest {
      */
     public int getExpirationMonth() {
         return expirationMonth;
+    }
+
+    /**
+     * @return tipo de moneda de la tarjeta
+     */
+    public String getKindMoney() {
+        return kindMoney;
     }
 }
