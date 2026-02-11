@@ -1,8 +1,12 @@
 package com.example.bank.entity;
 
 import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.example.bank.enums.CardStatus;
+import com.example.bank.enums.TransactionType;
 
 /**
  * Entidad de dominio que representa una tarjeta bancaria.
@@ -44,6 +48,12 @@ public class Card {
      * Estado actual de la tarjeta.
      */
     private CardStatus status;
+
+    /**
+     * Transacciones.
+     */
+    private final List<Transaction> transactions = new ArrayList<>();
+
 
     /**
      * Crea una nueva tarjeta con estado inicial activo y balance cero.
@@ -109,6 +119,13 @@ public class Card {
     }
 
     /**
+     * @return Transacciones
+     */
+    public List<Transaction> getTransactions() {
+        return Collections.unmodifiableList(transactions);
+    }
+
+    /**
      * Alterna el estado de la tarjeta entre {@code ACTIVE} y {@code BLOCKED}.
      *
      * <p>
@@ -150,6 +167,43 @@ public class Card {
         }
 
         this.balance += amount;
+
+        transactions.add(new Transaction(TransactionType.RECHARGE, amount));
+
+    }
+
+    /**
+     * Realiza una compra descontando saldo disponible de la tarjeta.
+     *
+     * <p>
+     * La operación solo puede ejecutarse si la tarjeta se encuentra
+     * en estado {@link CardStatus#ACTIVE} y dispone de saldo suficiente.
+     * El balance resultante no puede ser negativo.
+     * </p>
+     *
+     * @param amount monto de la compra
+     * @throws IllegalStateException si la tarjeta no está activa
+     * @throws IllegalArgumentException si el monto es menor o igual a cero
+     *                                  o si no hay saldo suficiente
+     */
+    public void purchase(double amount) {
+
+        if (this.status != CardStatus.ACTIVE) {
+            throw new IllegalStateException("Card must be ACTIVE to make a purchase");
+        }
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
+        }
+
+        if (this.balance - amount < 0) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+
+        this.balance -= amount;
+
+        transactions.add(new Transaction(TransactionType.PURCHASE, amount));
+
     }
 
 }

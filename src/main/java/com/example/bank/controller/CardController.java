@@ -1,10 +1,15 @@
 package com.example.bank.controller;
 
+import com.example.bank.dto.CardDetailsResponse;
 import com.example.bank.dto.CardResponse;
 import com.example.bank.dto.CreateCardRequest;
+import com.example.bank.dto.PurchaseRequest;
 import com.example.bank.dto.RechargeRequest;
+import com.example.bank.dto.TransactionResponse;
 import com.example.bank.entity.Card;
 import com.example.bank.services.CardService;
+
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -187,6 +192,107 @@ public class CardController {
 
         Card card = cardService.recharge(cardNumber, request.getAmount());
         return new CardResponse(card);
+    }
+
+    /**
+     * Realiza una compra utilizando una tarjeta bancaria.
+     *
+     * <p>
+     * La tarjeta debe estar activa y contar con saldo suficiente.
+     * </p>
+     *
+     * @param cardNumber número de la tarjeta
+     * @param request datos de la compra
+     * @return representación actualizada de la tarjeta
+     */
+    @Operation(
+        summary = "Realizar compra",
+        description = "Descuenta saldo de una tarjeta activa si dispone de fondos suficientes"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Compra realizada correctamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = CardResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Solicitud inválida o saldo insuficiente",
+            content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Tarjeta no encontrada",
+            content = @Content
+        )
+    })
+    @PutMapping("/{cardNumber}/purchase")
+    public CardResponse purchase(
+            @PathVariable String cardNumber,
+            @RequestBody PurchaseRequest request) {
+
+        Card card = cardService.purchase(cardNumber, request.getAmount());
+        return new CardResponse(card);
+    }
+
+    /**
+     * Consulta el saldo actual y el historial completo de movimientos
+     * de una tarjeta bancaria.
+     *
+     * <p>
+     * Devuelve toda la información operativa disponible incluyendo:
+     * número, tipo, titular, fecha de expiración, estado,
+     * balance actual y lista de movimientos realizados.
+     * </p>
+     *
+     * @param cardNumber número único de la tarjeta
+     * @return información detallada de la tarjeta
+     */
+    @Operation(
+        summary = "Consultar saldo e historial",
+        description = "Obtiene toda la información de la tarjeta incluyendo balance actual y movimientos"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Información obtenida correctamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = CardDetailsResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Tarjeta no encontrada",
+            content = @Content
+        )
+    })
+    @GetMapping("infoCard/{cardNumber}")
+    public CardDetailsResponse getCardDetails(
+            @PathVariable String cardNumber) {
+
+        Card card = cardService.getCardDetails(cardNumber);
+
+        List<TransactionResponse> transactions =
+                card.getTransactions().stream()
+                        .map(t -> new TransactionResponse(
+                                t.getType().name(),
+                                t.getAmount(),
+                                t.getTimestamp()))
+                        .toList();
+
+        return new CardDetailsResponse(
+                card.getCardNumber(),
+                card.getCardType(),
+                card.getHolderName(),
+                card.getExpirationDate(),
+                card.getBalance(),
+                card.getStatus().name(),
+                transactions
+        );
     }
 
 }

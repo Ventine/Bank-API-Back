@@ -131,5 +131,43 @@ public class CardService {
         card.recharge(amount);
         return card;
     }
+    
+    /**
+     * Ejecuta una compra sobre una tarjeta existente.
+     *
+     * @param cardNumber número único de la tarjeta
+     * @param amount monto de la compra
+     * @return tarjeta actualizada tras la operación
+     * @throws IllegalArgumentException si la tarjeta no existe
+     */
+    public Card purchase(String cardNumber, double amount) {
+
+        Card card = cardStore.get(cardNumber);
+
+        if (card == null) {
+            throw new IllegalArgumentException("Card not found");
+        }
+
+        card.purchase(amount);
+        return card;
+    }
+
+        /**
+     * Obtiene la información completa de una tarjeta incluyendo historial.
+     *
+     * @param cardNumber número único de la tarjeta
+     * @return tarjeta encontrada
+     * @throws IllegalArgumentException si la tarjeta no existe
+     */
+    public Card getCardDetails(String cardNumber) {
+
+        Card card = cardStore.get(cardNumber);
+
+        if (card == null) {
+            throw new IllegalArgumentException("Card not found");
+        }
+
+        return card;
+    }
 
 }
